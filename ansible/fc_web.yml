@@ -1,0 +1,17 @@
+---
+- hosts: webservers
+  remote_user: ubuntu
+  become: yes
+  become_method: 'sudo'
+  tasks:
+    - name: Install nginx
+      apt: pkg=nginx state=installed update_cache=True
+
+    - name: upload index.html to web server
+      copy: src=static_files/index.html dest=/usr/share/nginx/html/ mode=0644
+      notify:
+        - start nginx
+
+  handlers:
+    - name: start nginx
+      service: name=nginx state=started enabled=yes
